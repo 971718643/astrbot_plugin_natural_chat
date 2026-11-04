@@ -1,6 +1,6 @@
-# AstrBot 群聊与私聊自然接话插件
+# AstrBot Natural Chat · 自然接话
 
-`astrbot_plugin_turn_taking` · v0.7.2
+[`astrbot_plugin_natural_chat`](https://github.com/971718643/astrbot_plugin_natural_chat) · v0.7.2
 
 让机器人在被叫到之后自然续聊、适时收尾，并根据具体话题选择稍后再接一句。支持隐藏语音/文字标记、被动的未完话题记录和本地发送状态观察。
 
@@ -13,14 +13,53 @@
 - **未完话题**：每个会话最多 2 条，从实际提起或推进后再保留 5 天；只被动接续，不触发主动发言。到期后留下有界清理记录，记录最多 100 条、保留 7 天。
 - **发送状态**：区分处理中、准备回复、发送中、接口成功、明确拒绝、部分成功和未确认。失败信号不会被后续成功钩子抹掉。
 
+## 运行前提
+
+**基本功能可以独立使用，不强制安装记忆、情感或场景增强插件。** 本插件自身只使用 Python 标准库和 AstrBot 已有接口，无需额外安装 Python 第三方库；模型、语音和消息平台各自需要的依赖由对应提供商或适配器决定。
+
+| 项目 | 要求与作用 |
+| --- | --- |
+| AstrBot | 按 **v4.29.1 + Python 3.12** 验证。使用了 Agent、结果装饰、发送阶段等内部接口，其他版本需要确认兼容性。 |
+| 聊天模型 | 在 AstrBot 中配置并能正常对话。通过 `self_initiative` 工具预约时，模型还需支持工具调用；本插件不限定某一家模型服务。 |
+| 消息平台 | 已在 AstrBot 中完成连接。当前重点验证 QQ / `aiocqhttp`（OneBot v11），例如搭配 NapCat；其他平台未逐一验证。[OneBot 接入文档](https://docs.astrbot.app/platform/aiocqhttp.html)。 |
+| 人格 | 使用 AstrBot 当前人格配置。回复的语气和情感表达仍取决于人格、模型及实际上下文。 |
+
+## 按需搭配
+
+以下组件提供额外能力，按需要选择即可，不必全部安装。
+
+| 想要的能力 | 可搭配的组件 | 配置与边界 |
+| --- | --- | --- |
+| 记住用户偏好、长期经历、跨话题的信息 | [Iris Chat Memory](https://github.com/Leafliber/astrbot_plugin_iris_chat_memory) | 独立安装并按其文档配置记忆与向量检索所需服务。本插件的两条未完话题只保存短期对话进度，不替代长期记忆。 |
+| 更好地理解群聊中谁在跟谁说话、补充近期场景、按需回看图片 | [ContextAware](https://github.com/muyouzhi6/astrbot_plugin_context_aware) | 按其文档开启对应功能；实际看图需要具备相应图像能力的模型。本插件的近期消息缓存主要供自主接话到期判断使用，不等同于给每轮普通回复注入完整群聊记录。 |
+| 好感度、亲密度、态度与关系阶段 | [EmotionAI Pro](https://github.com/asakiyoshi/EmotionAI-Pro) | 独立安装和配置情感分析。本插件不会自行生成这些数值；内部自主唤醒会排除注册名为 `astrbot_plugin_emotionai_pro` 的插件，避免将机器人自己的唤醒当作真人互动。 |
+| 让机器人用语音回复 | AstrBot 支持的 **TTS（文字转语音）提供商** | 在 AstrBot 中启用 TTS 并配置可用提供商。`[[语音]]` / `[[文字]]` 只选择当前回复的方式；无标记沿用 AstrBot 当前概率，并非由本插件固定为 20%。 |
+| 让机器人听懂用户发来的语音 | AstrBot 支持的 **STT（语音识别）提供商** | 独立启用语音识别，将识别结果交给聊天模型；输出语音所用的 TTS 不能代替 STT。本插件使用已有转写，不内置识别模型。 |
+| 辅助分析预算、画像/情感分析限频、特定语音拒绝后的文字回退 | **RuntimeGuard 本地辅助插件** | 这是独立的本地组件，当前仓库没有提供它的安装包。仅安装本仓库不会获得这些额外机制；`tests/fixtures/voice_fallback.py` 是测试参考文件，不是可安装插件。 |
+
+可按下面的顺序搭配：
+
+1. **先用基本组合**：AstrBot + 消息平台 + 聊天模型 + 本插件，确认正常接话和自主预约可用。
+2. **需要长期陪伴记忆**：再加入 Iris；需要关系数值时加入 EmotionAI Pro。
+3. **群聊多人对话或图片场景较多**：再加入 ContextAware，并按它的文档配置场景与图像能力。
+4. **需要语音**：输出配置 TTS，输入识别配置 STT，两项分别启用。
+
+### 搭配时的注意事项
+
+- ContextAware 与 AstrBot 内置群聊上下文注入应协调配置；已由 ContextAware 提供相同记录时，可关闭内置的 `group_icl_enable`，避免重复注入和额外 token。具体以 [ContextAware 当前文档](https://github.com/muyouzhi6/astrbot_plugin_context_aware) 为准。
+- 画像、长期记忆总结、情感分析和场景摘要可能各自调用模型；向量检索还可能使用 Embedding 服务。安装后要分别配置，不能将它们的用量都视为本插件主对话的用量。
+- 自主接话到期判断会使用当前主模型；未完话题指导和临时资料也会占用当前请求的 token。本插件没有新增逐条消息分类模型。
+- 已有适配参考包含 Iris 0.3.0、ContextAware `3.11.0+local.gif2`、EmotionAI Pro `v4.0.0+local.3` 及 RuntimeGuard 1.0.0。其中带 `local` 的组件有本地修改，不能假定公开上游版与这个组合完全一致；上面的链接指向上游项目，安装与具体能力以其文档为准。
+- 本插件观察发送结果，并可与既有语音回退机制共存；它本身不会因为发送失败而自动重发。没有 RuntimeGuard 时，也不承诺具备其特定的文字补发机制。
+
 ## 安装与配置
 
-运行接口按 AstrBot v4.29.1 验证。需要配置聊天模型；语音标记还需要在 AstrBot 中启用并配置 TTS 提供商。
-
 1. 在 AstrBot 插件管理中通过此仓库地址安装：
-   `https://github.com/971718643/project-1`
+   `https://github.com/971718643/astrbot_plugin_natural_chat`
 2. 或运行 `python build_package.py`，将 `dist/` 下的插件 ZIP 上传到插件管理页面。
 3. 在插件配置中调整范围、概率、冷却和主动发言限次；机器人称呼可在 `main.py` 的 `bot_names` 中调整。
+
+仓库名为 `astrbot_plugin_natural_chat`；当前版本的内部注册名仍是 `astrbot_plugin_turn_taking`，下方状态接口沿用该标识。
 
 配置默认值：
 
