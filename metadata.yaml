@@ -1,10 +1,24 @@
 name: astrbot_plugin_turn_taking
 display_name: 群聊话权状态机
-short_desc: 自然续聊、受限主动接话、未完话题与发送状态
-desc: 群聊私聊自然接话；话题续期、到期留痕与即时发送异常信号。
+short_desc: 让机器人自然续聊、受限主动开口，并接续未完话题
+desc: >-
+  为 QQ 群聊和私聊增强对话衔接。被 @ 或点名后可继续接住同一人的消息，
+  在收尾、超时、他人插话或达到轮数上限时结束话轮。
+  模型可预约一次稍后接话，届时结合最新聊天决定发言或沉默，并受冷却、限次和静默时段限制。
+  支持单条语音/文字选择、每会话最多 2 条未完话题（实际提起或推进后再保留 5 天），
+  以及发送接口成功、明确拒绝、部分成功和未确认等本地状态观察。
+  基础功能可独立使用；长期记忆、情感与场景增强按需搭配其他插件，语音输出需另行启用 TTS。
 version: v0.7.2
 author: "dsh & OpenAI Codex"
 repo: https://github.com/971718643/astrbot_plugin_natural_chat
 astrbot_version: ">=4.29.1"
 support_platforms:
   - aiocqhttp
+category: 工具
+tags:
+  - AI增强
+  - 自然聊天
+  - 主动接话
+  - 未完话题
+  - 群聊
+  - 语音
