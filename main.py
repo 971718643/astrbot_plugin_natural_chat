@@ -40,7 +40,7 @@ QUESTION_HINTS = (
 
 @register(
     "astrbot_plugin_turn_taking",
-    "dsh",
+    "dsh & OpenAI Codex",
     "群聊话权状态机：连续对话 + 自动收尾",
     "v0.7.2",
 )
