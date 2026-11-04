@@ -2,6 +2,8 @@
 
 [`astrbot_plugin_natural_chat`](https://github.com/971718643/astrbot_plugin_natural_chat) · v0.7.2
 
+作者：**dsh** · 开发协助：**OpenAI Codex（AI 辅助开发）**
+
 让机器人在被叫到之后自然续聊、适时收尾，并根据具体话题选择稍后再接一句。支持隐藏语音/文字标记、被动的未完话题记录和本地发送状态观察。
 
 ## 功能
