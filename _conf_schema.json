@@ -1,0 +1,17 @@
+{
+  "reply_private_markers_enabled": {"type": "bool", "default": true, "description": "私聊也支持隐藏语音/文字与开口标记", "hint": "关闭时仍隐藏控制标记，但不执行私聊标记；不改变无标记时原有语音概率。"},
+  "private_self_initiated_enabled": {"type": "bool", "default": true, "description": "允许在当前私聊自主预约稍后接话", "hint": "每个私聊独立计算，沿用5分钟冷却、每小时3次、每天12次及23至8点静默。不进行私聊5%随机发起。"},
+  "reply_voice_markers_enabled": {"type": "bool", "default": true, "description": "允许模型用隐藏标记选择本条语音或文字", "hint": "末尾[[语音]]强制尝试原有TTS，[[文字]]跳过TTS；没有标记时沿用原20%语音概率。"},
+  "reply_followup_markers_enabled": {"type": "bool", "default": true, "description": "允许模型用隐藏标记预约稍后考虑接话", "hint": "末尾[[开口:秒数]]与自主预约工具共用待办和限次；1至7200秒，不足300秒按300秒。实际发送成功后生效，到期仍可沉默。"},
+  "proactive_all_groups": {"type": "bool", "default": true, "description": "对所有群开放主动参与与自主预约", "hint": "开启时不检查群白名单；仅群聊生效，私聊不在此范围。"},
+  "self_initiated_enabled": {"type": "bool", "default": true, "description": "允许模型自主预约一次稍后考虑接话", "hint": "每群仅一项，5分钟至2小时；到时根据最新聊天可选择沉默，不会自主循环预约。与偶尔参与共享静默、冷却、小时和每日额度。"},
+  "proactive_enabled": {"type": "bool", "default": true, "description": "启用适度主动参与群聊"},
+  "proactive_group_whitelist": {"type": "list", "default": [], "description": "限定群会话ID（仅关闭全群模式后使用）", "hint": "全群模式开启时忽略此列表。关闭全群模式且列表为空时不允许主动参与。"},
+  "proactive_probability": {"type": "float", "default": 0.05, "description": "满足条件的消息触发概率"},
+  "proactive_cooldown_seconds": {"type": "int", "default": 300, "description": "主动参与最短间隔（秒）"},
+  "proactive_startup_grace_seconds": {"type": "int", "default": 300, "description": "启动后先观察群聊的时间（秒）"},
+  "proactive_max_per_hour": {"type": "int", "default": 3, "description": "每群每小时最多主动发起次数"},
+  "proactive_max_per_day": {"type": "int", "default": 12, "description": "每群每天最多主动发起次数（北京时间）"},
+  "proactive_quiet_start": {"type": "int", "default": 23, "description": "主动接话静默开始小时（北京时间）"},
+  "proactive_quiet_end": {"type": "int", "default": 8, "description": "主动接话静默结束小时（北京时间）"}
+}
