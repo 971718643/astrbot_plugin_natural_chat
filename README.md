@@ -54,10 +54,29 @@
 
 ## 安装与配置
 
-1. 在 AstrBot 插件管理中通过此仓库地址安装：
-   `https://github.com/971718643/astrbot_plugin_natural_chat`
-2. 或运行 `python build_package.py`，将 `dist/` 下的插件 ZIP 上传到插件管理页面。
-3. 在插件配置中调整范围、概率、冷却和主动发言限次；机器人称呼可在 `main.py` 的 `bot_names` 中调整。
+### 方式一：从仓库链接安装（推荐）
+
+1. 登录自己的 AstrBot 管理面板，先确认聊天模型已配置、消息平台已连接。
+2. 点击左侧 **插件**，在 **已安装** 或 **插件市场** 页面点击右下角 **安装插件（＋）**。
+3. 选择 **从链接安装**，粘贴下面的仓库地址并安装：
+
+   ```text
+   https://github.com/971718643/astrbot_plugin_natural_chat
+   ```
+
+4. 安装完成后回到 **已安装**。插件当前显示名为 **群聊话权状态机**；确认它已启用且没有加载错误。
+5. 点击插件卡片的 **齿轮 / 插件配置**，按需调整群聊范围、主动概率、冷却和限次，保存配置。需要用 `self_initiative` 工具预约时，还要确认当前模型支持工具调用、当前人格允许使用该工具。
+6. 在已接入的群聊中 **@机器人发送一句文字**，或在私聊中发一句话，先验证基础回复；语音输出和输入识别分别按上文配置 TTS、STT。
+
+安装入口可参考 [AstrBot 官方插件安装说明](https://docs.astrbot.app/use/plugin.html)。
+
+### 方式二：从 ZIP 文件安装
+
+1. 下载本仓库源码，在仓库根目录运行 `python build_package.py`。
+2. 取得生成的 `dist/astrbot_plugin_turn_taking-v0.7.2.zip`。
+3. 在 AstrBot 的 **插件 → 安装插件（＋）→ 从文件安装** 中上传该 ZIP；完成后按方式一的第 4–6 步启用、配置和测试。
+
+机器人称呼可在 `main.py` 的 `bot_names` 中调整。
 
 仓库名为 `astrbot_plugin_natural_chat`；当前版本的内部注册名仍是 `astrbot_plugin_turn_taking`，下方状态接口沿用该标识。
 
